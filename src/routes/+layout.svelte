@@ -23,7 +23,7 @@
     <ul bind:clientHeight={clientHeight} class="variant-glass-surface">
         <li class="flex flex-row items-center">
             <div class="homePageLinkContainer">
-                <a class="homePageLink" href="/">Elins App</a>
+                <a class="homePageLink" href="/">🏳Roger's app</a>
             </div>
             <div>
                 <LightSwitch/>

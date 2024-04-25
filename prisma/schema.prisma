@@ -16,9 +16,15 @@ model User {
   tokens   token[]
   salt     String
   hash     String
-  personalPoints       Int        @default(0)
-  activity activity[]
-  Favorites activity[] @relation("Favorites")
+  gender   String
+  ageGroup String
+  village  String
+  mail     String
+  createdServices       Int        @default(0)
+  isTrusted   Boolean    @default(false)
+  service service[]
+  LikedServices service[] @relation("LikedServices")
+  isAdministrator Boolean @default(false)
 }
 
 model token {
@@ -28,15 +34,14 @@ model token {
   userId    Int
 }
 
-model activity {
+model service {
   id        Int      @id @default(autoincrement())
   username  String
   name      String
   description String
-  estTime   Int
-  activityPoints        Int
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  isFavoritedBy User[] @relation("Favorites")
+  isLikedBy User[] @relation("LikedServices")
+  isAdminApproved Boolean @default(false)
 }

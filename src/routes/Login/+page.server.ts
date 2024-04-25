@@ -18,6 +18,9 @@ export const actions: Actions = {
     const data = await request.formData();
     let username = data.get("username")?.toString();
     let password = data.get("password")?.toString();
+    let isAdmin = data.get("isAdministrator")?.toString();
+    console.log("isAdmin: ", isAdmin);
+
 
     if (username) {
       const existingUser = await prisma.user.findUnique({

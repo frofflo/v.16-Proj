@@ -17,31 +17,70 @@ export const actions: Actions = {
   login: async ({ request, cookies }) => {
     const data = await request.formData();
     let username = data.get("username")?.toString();
+    let gender = data.get("gender")?.toString();
+    let ageGroup = data.get("ageGroup")?.toString();
+    let village = data.get("village")?.toString();
+    let mail = data.get("mail")?.toString();
+    console.log("username: ", username);
+    console.log("gender: ", gender);
+    console.log("ageGroup: ", ageGroup);
+    console.log("village: ", village);
+    console.log("mail: ", mail);
       
-    if (username) {
-      const existingUser = await prisma.user.findUnique({
-        where: {
-          name: username,
-        }, 
-      });
-      if (existingUser) {
-        return fail(400, { password: "Username already exists" });
+    if (username != "ADMIN") {
+      let repeatedPassword = data.get("repeatedPassword")?.toString();
+      let password = data.get("password")?.toString();
+      if (password == repeatedPassword && password && repeatedPassword && gender && ageGroup && village && mail && username){
+        const { salt, hash } = hashPassword(password);
+        const newUser = await prisma.user.create({
+            data: {
+              name: username,
+              salt: salt,
+              hash: hash,
+              gender: gender,
+              ageGroup: ageGroup,
+              village: village,
+              mail: mail,
+            },
+          });
+          const token = await prisma.token.create({
+            data: { userId: newUser.id },
+          });
+
+          cookies.set("token_id", token.id, {
+            secure: false,
+            path: "/"
+          });
+          cookies.set("username", username, {
+            secure: false,
+            path: "/"
+          });
+          
+        throw redirect(303, "/");
       } else {
+        console.log("don't work")
+      }
+    } else {
         let repeatedPassword = data.get("repeatedPassword")?.toString();
         let password = data.get("password")?.toString();
-        if (password == repeatedPassword && password && repeatedPassword){
+        if (password == repeatedPassword && password && repeatedPassword && gender && ageGroup && village && mail && username){
           const { salt, hash } = hashPassword(password);
           const newUser = await prisma.user.create({
               data: {
                 name: username,
+                isAdministrator: true,
                 salt: salt,
                 hash: hash,
+                gender: gender,
+                ageGroup: ageGroup,
+                village: village,
+                mail: mail,
               },
             });
             const token = await prisma.token.create({
               data: { userId: newUser.id },
             });
-
+  
             cookies.set("token_id", token.id, {
               secure: false,
               path: "/"
@@ -53,10 +92,24 @@ export const actions: Actions = {
             
           throw redirect(303, "/");
         } else {
-          return fail(400, { password: "Passwords do not match!" });
+          console.log("don't work")
         }
       }
+  },
+  usernameCheck: async ({ request }) => {
+    const data = await request.formData();
+    let username = data.get("username")?.toString();
+    if (username) {
+      const existingUser = await prisma.user.findUnique({
+        where: {
+          name: username,
+        }, 
+      });
+      if (existingUser) {
+        return { username_taken: true, username: username};
+      }
     }
+    return  {username_taken: false, username: username};
   },
 };
 

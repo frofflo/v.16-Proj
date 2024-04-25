@@ -22,7 +22,9 @@
             {#if form?.password}
                 <span class="errorMessage">{form.password}</span>
             {/if}
-            <button class="mt-4 mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-1/2">Log in</button>
+            <div style="width:100%" class="flex flex-row justify-center">
+                <button class="btn variant-filled w-1/2 mt-4">Log in</button>
+            </div>
             <br>
             <a href="/register">Don't have an account?</a>
         </form>
